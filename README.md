@@ -1,5 +1,4 @@
-# nelder_mead
-Nelder-Mead Method for nonlinear optimization
+# Nelder-Mead Method for nonlinear optimization
 
 Searches for the minimum of a function. Nelder-Mead Method was tested with the Himmelblau's function.
 
