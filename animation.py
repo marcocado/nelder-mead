@@ -9,7 +9,7 @@ if __name__ == "__main__":
     # read data with pandas and convert it to a numpy array
     df = pd.read_csv(r'/home/marco/Projekte/NelderMead/downhill_simplex.txt', sep=", ", engine='python')
     coordinate_array = df.to_numpy()
-    length = data.shape[0]
+    length = coordinate_array.shape[0]
 
     # create a scatter plot for the himmelblau function to visualize the downhill simplex process
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"}, figsize=(9, 9), dpi=160)
