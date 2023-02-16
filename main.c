@@ -76,7 +76,7 @@ void sort_simplex(struct simplex *s){
     Calculate the Maximum and Minimum Point of the Simplex. Write the variables into the
     Data Structure of the Simplex
     */
-    if((s->f1 > s->f2) && (s->f1 > s->f3)){
+    if(s->f1 > s->f2 && s->f1 > s->f3){
         s->max = 1;
         s->xMax = s->x1;
         s->yMax = s->y1;
@@ -94,7 +94,7 @@ void sort_simplex(struct simplex *s){
             s->fMin = function(s->xMin, s->yMin);
         }
     }
-    else if ((s->f2 > s->f1) && (s->f2 > s->f3))
+    else if (s->f2 > s->f1 && s->f2 > s->f3)
     {
         s->max = 2;
         s->xMax = s->x2;
