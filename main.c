@@ -213,6 +213,7 @@ double calculate_average_edge_length(struct simplex *s){
 }
 
 int main(void){
+    // Initialization of all variables
     double alpha = 1;
     double gamma = 2;
     double beta = 0.5;
@@ -221,7 +222,7 @@ int main(void){
     int maximum_iterations = 30;
     int i = 0;
 
-    // Initialize of all points and the simplex structure
+    // Declaration of all points and the simplex structure and assignment of the starting conditions
     struct point Pr, Pe, Pc;
     struct simplex S, *ptrS;
     ptrS = &S;
@@ -265,6 +266,8 @@ int main(void){
         average_edge_length = calculate_average_edge_length(ptrS);
         i++;
     }
+    
     fclose(filePtr);
+    
     return 0;
 }
