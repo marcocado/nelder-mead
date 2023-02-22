@@ -229,7 +229,6 @@ int main(void){
     ptrS->x1 = -3;
     ptrS->y1 = -5;
     initialize_simplex(ptrS, step_width);
-
     double average_edge_length = calculate_average_edge_length(ptrS);
 
     // Start the writing process of the txt-file
