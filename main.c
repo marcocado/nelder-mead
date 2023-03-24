@@ -30,8 +30,8 @@ struct simplex {
     double xMin;
     double yMin;
     double fMin;
-    int max;
-    int min;
+    unsigned int max : 3;
+    unsigned int min : 3;
 };
 
 struct point {
@@ -215,19 +215,20 @@ double calculate_average_edge_length(struct simplex *s){
 int main(void){
     // Initialization of all variables
     double alpha = 1;
-    double gamma = 2;
-    double beta = 0.5;
+    double beta = 2.0;
+    double gamma = 0.5;
+    double omega = -0.5;
     double step_width = 0.6;
-    double tolerance = 0.04;
+    double tolerance = 0.1;
     int maximum_iterations = 30;
     int i = 0;
 
     // Declaration of all points and the simplex structure and assignment of the starting conditions
-    struct point Pr, Pe, Pc;
+    struct point P_reflexion, P_expansion, P_outer_contraction, P_inner_contraction;
     struct simplex S, *ptrS;
     ptrS = &S;
-    ptrS->x1 = -3;
-    ptrS->y1 = -5;
+    ptrS->x1 = -4.0;
+    ptrS->y1 = -6.0;
     initialize_simplex(ptrS, step_width);
     double average_edge_length = calculate_average_edge_length(ptrS);
 
@@ -236,36 +237,56 @@ int main(void){
     filePtr = fopen("downhill_simplex.txt","w");
     fprintf(filePtr, "x1, y1, f1, x2, y2, f2, x3, y3, f3\n");
 
-    while(average_edge_length > tolerance && i < maximum_iterations){
+    // Numerical solving process until a solution is found of maximum itertations are reached
+    while(average_edge_length > tolerance && i <= maximum_iterations){
         print_simplex(ptrS, filePtr);
         calculate_simplex(ptrS);
         sort_simplex(ptrS);
-        Pr = calculate_reflexion(ptrS, alpha);
-        if(Pr.f < ptrS->fMin){
-            Pe = calculate_reflexion(ptrS, gamma);
-            if(Pe.f < ptrS->fMin){
-                replace_simplex_point(ptrS, Pe, ptrS->max);
+        P_reflexion = calculate_reflexion(ptrS, alpha);
+        if(P_reflexion.f < ptrS->fMin){
+            P_expansion = calculate_reflexion(ptrS, beta);
+            if(P_expansion.f < ptrS->fMin){
+                replace_simplex_point(ptrS, P_expansion, ptrS->max);
             }
             else {
-                replace_simplex_point(ptrS, Pr, ptrS->max);
+                replace_simplex_point(ptrS, P_reflexion, ptrS->max);
             }
         }
-        else if(Pr.f > ptrS->fMax){
-            Pc = calculate_reflexion(ptrS, beta);
-            if(Pc.f < ptrS->fMax){
-                replace_simplex_point(ptrS, Pc, ptrS->max);
+        else if(P_reflexion.f < ptrS->fMax){
+            P_outer_contraction = calculate_reflexion(ptrS, gamma);
+            if(P_outer_contraction.f < P_reflexion.f){
+                replace_simplex_point(ptrS, P_outer_contraction, ptrS->max);
+            }
+            else{
+                compress_simplex(ptrS, ptrS->min);
+            }
+        }
+        else if(P_reflexion.f >= ptrS->fMax){
+            P_inner_contraction = calculate_reflexion(ptrS, omega);
+            if (P_inner_contraction.f < ptrS->fMax)
+            {
+                replace_simplex_point(ptrS, P_inner_contraction, ptrS->max);
             }
             else{
                 compress_simplex(ptrS, ptrS->min);
             }
         }
         else{
-            replace_simplex_point(ptrS, Pr, ptrS->max);
+            replace_simplex_point(ptrS, P_reflexion, ptrS->max);
         }
         average_edge_length = calculate_average_edge_length(ptrS);
         i++;
     }
+
+    // Show if the numerical process have reached a valueable solution
+    if(average_edge_length > tolerance){
+        printf("Numerical process haven't converged with the %d iteration\n", i-1);
+    }
+    else{
+        printf("The solution is x = %.2f and y = %.2f\n", ptrS->xMin, ptrS->yMin);
+    }
     
+    // Close the printet .txt-file
     fclose(filePtr);
     
     return 0;
