@@ -2,19 +2,19 @@
 #include<math.h>
 #include<stdlib.h>
 
+/*
+Himmelblau Function: f(x, y) = (x^2 + y - 11)^2 + (x + y^2 - 7)^2
+*/
 double function(double x, double y){
-    /*
-    Himmelblau Function: f(x, y) = (x^2 + y - 11)^2 + (x + y^2 - 7)^2
-    */
     return pow((pow(x, 2) + y - 11), 2) + pow((x + pow(y, 2) -7), 2);
 }
 
+/*
+Data Structure for the Simplex
+- contains all edge points of the simplex
+- contains all information about the minimum and maximum point of the simplex
+*/
 struct simplex {
-    /*
-    Data Structure for the Simplex
-    - contains all edge points of the simplex
-    - contains all information about the minimum and maximum point of the simplex
-    */
     double x1;
     double x2;
     double x3;
@@ -34,19 +34,19 @@ struct simplex {
     unsigned int min : 3;
 };
 
+/*
+Data Structure for all Points
+*/
 struct point {
-    /*
-    Data Structure for all Points
-    */
     double x;
     double y;
     double f;
 };
 
+/*
+Initialsation of the Simplex with a simplex rectangular triangle. Side length as an input.
+*/
 void initialize_simplex(struct simplex *s, double step_width){
-    /*
-    Initialsation of the Simplex with a simplex rectangular triangle. Side length as an input.
-    */
     s->x2 = s->x1 + step_width;
     s->x3 = s->x1;
     s->y2 = s->y1;
@@ -56,10 +56,10 @@ void initialize_simplex(struct simplex *s, double step_width){
     s->f3 = function(s->x3, s->y3);
 }
 
+/*
+Print all Points of the Simplex to a file
+*/
 void print_simplex(struct simplex *s, FILE *fp){
-    /*
-    Print all Points of the Simplex to a file
-    */
     fprintf(fp, "%.2f, %.2f, %.2f, ", s->x1, s->y1, s->f1);
     fprintf(fp, "%.2f, %.2f, %.2f, ", s->x2, s->y2, s->f2);
     fprintf(fp, "%.2f, %.2f, %.2f\n", s->x3, s->y3, s->f3);
@@ -71,11 +71,11 @@ void calculate_simplex(struct simplex *s){
     s->f3 = function(s->x3, s->y3);
 }
 
+/*
+Calculate the Maximum and Minimum Point of the Simplex. Write the variables into the
+Data Structure of the Simplex
+*/
 void sort_simplex(struct simplex *s){
-    /*
-    Calculate the Maximum and Minimum Point of the Simplex. Write the variables into the
-    Data Structure of the Simplex
-    */
     if(s->f1 > s->f2 && s->f1 > s->f3){
         s->max = 1;
         s->xMax = s->x1;
@@ -133,14 +133,14 @@ void sort_simplex(struct simplex *s){
     }
 }
 
+/*
+Replace a Simplex Point with a Point
+Inputs:
+    pointer to a struct simplex
+    struct point
+    position: to know which point you want to change
+*/
 void replace_simplex_point(struct simplex *s, struct point p, int position){
-    /*
-    Replace a Simplex Point with a Point
-    Inputs:
-        pointer to a struct simplex
-        struct point
-        position: to know which point you want to change
-    */
     if(position == 1){
         s->x1 = p.x;
         s->y1 = p.y;
@@ -158,10 +158,10 @@ void replace_simplex_point(struct simplex *s, struct point p, int position){
     }
 }
 
+/*
+Compress the simplex with a factor of 2
+*/
 void compress_simplex(struct simplex *s, int position){
-    /*
-    Compress the simplex with a factor of 2
-    */
     if(position == 1){
         s->x2 = (s->x2 + s->x1)/2.0;
         s->y2 = (s->y2 + s->y1)/2.0;
@@ -185,15 +185,15 @@ void compress_simplex(struct simplex *s, int position){
     }
 }
 
+/*
+Calculate a reflected point of the Simplex.
+Inputs:
+    pointer to a struct simplex
+    value: reflecion value, determines the width of the reflexion
+Return:
+    struct point
+*/
 struct point calculate_reflexion(struct simplex *s, double value){
-    /*
-    Calculate a reflected point of the Simplex.
-    Inputs:
-        pointer to a struct simplex
-        value: reflecion value, determines the width of the reflexion
-    Return:
-        struct point
-    */
     struct point p;
     p.x = 1.5*(((s->x1 + s->x2 + s->x3)/3.0) - s->xMax)*(1.0 + value) + s->xMax;
     p.y = 1.5*(((s->y1 + s->y2 + s->y3)/3.0) - s->yMax)*(1.0 + value) + s->yMax;
@@ -201,10 +201,10 @@ struct point calculate_reflexion(struct simplex *s, double value){
     return p;
 }
 
+/*
+As a termination criterion the averge edge length of the simplex needs to be calculated
+*/
 double calculate_average_edge_length(struct simplex *s){
-    /*
-    As a termination criterion the averge edge length of the simplex needs to be calculated
-    */
     double l1, l2, l3;
     l1 = sqrt(pow(s->x1 - s->x2, 2) + pow(s->y1 - s->y2, 2));
     l2 = sqrt(pow(s->x2 - s->x3, 2) + pow(s->y2 - s->y3, 2));
